@@ -8,11 +8,13 @@ import re
 doc = r"""
 Usage: ./column.py [options] [<input> ...]
 
-    -h,--help                show this
-    -s,--separator <sep>     specify the regex used for delimiting columns 
-			        [default: \\s+]
-    -r <right-align-mode>    Right align "all" columns, "numeric" columns, or
-                             "no" columns [default: numeric]
+    -h,--help                    show this
+    -s,--separator <sep>         specify the regex used for delimiting columns
+			            [default: \\s+]
+    -r <right-align-mode>        Right align "all" columns, "numeric" columns,
+                                    or "no" columns [default: numeric]
+    -o --output-separator <ofs>  Delimiter to use between columns in the output
+                                    table [default:   ]
 """
 def main():
     options = docopt(doc)
@@ -76,7 +78,7 @@ def main():
     orderedColumns = \
         [columnLists[headerColumns[i]] for i in xrange(len(headerColumns))]
     for row in zip(*orderedColumns):
-        print '  '.join(row)
+        print options['--output-separator'].join(row)
 
 
 if __name__ == '__main__':
