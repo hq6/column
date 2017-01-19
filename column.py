@@ -4,6 +4,7 @@ from sys import argv, stdin
 from docopt import docopt
 from collections import defaultdict
 import re
+import codecs
 
 doc = r"""
 Usage: ./column.py [options] [<input> ...]
@@ -36,13 +37,14 @@ def main():
     lines = None
     if len(options["<input>"]) == 0:
       # read from stdin
-      lines = [x.strip() for x in stdin.readlines() if isValidLine(x)]
+      lines = [x.strip().encode("utf-8") for x in stdin.readlines() \
+              if isValidLine(x)]
     else:
       linesList = []
       for name in options["<input>"]:
-          with open(name) as f:
-              linesList.append([x.strip() for x in f.readlines()
-                  if isValidLine(x)])
+          with codecs.open(name, "r", "utf-8") as f:
+              linesList.append([x.strip().encode("utf-8") \
+                  for x in f.readlines() if isValidLine(x)])
       lines = reduce(lambda x, a: x + a, linesList, [])
 
     sep = re.compile(options['--separator'])
