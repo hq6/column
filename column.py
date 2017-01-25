@@ -27,7 +27,7 @@ def main():
 
     def isNumericColumn(x):
         for item in x:
-            if item == "": continue
+            if item in ("", "N/A", "NA"): continue
             try:
                 float(item)
             except:
