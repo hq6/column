@@ -6,6 +6,8 @@ from collections import defaultdict
 import re
 import codecs
 
+from signal import signal, SIGPIPE, SIG_DFL
+
 doc = r"""
 Usage: ./column.py [options] [<input> ...]
 
@@ -18,6 +20,9 @@ Usage: ./column.py [options] [<input> ...]
                                     table [default:   ]
 """
 def main():
+    # Handle broken pipes when piping the output of this process to other
+    # processes.
+    signal(SIGPIPE,SIG_DFL)
     options = docopt(doc)
     def isValidLine(x):
         y = x.strip()
