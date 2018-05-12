@@ -8,6 +8,7 @@ import codecs
 
 from signal import signal, SIGPIPE, SIG_DFL
 
+
 doc = r"""
 Usage: ./column.py [options] [<input> ...]
 
@@ -20,6 +21,28 @@ Usage: ./column.py [options] [<input> ...]
                                     table [default:   ]
 """
 def main():
+    ansi_escape = re.compile(r'(\x1B\[[0-?]*[ -/]*[@-~])')
+    def removeAnsiEscape(s):
+        return ansi_escape.sub('', s)
+
+    # These three functions are meant to remove ansi escape sequences from
+    # before and/or after a string, perform justification, and then re-add
+    # escape sequences.
+    def colorSafeJust(s, width, rightJust=True):
+        parts = filter(None, ansi_escape.split(s))
+        for i in range(len(parts)):
+            if ansi_escape.match(parts[i]): continue
+            # NOTE: If there is more than one non-escape part, that implies
+            # there was an escape sequence in the middle of the column,
+            # which this tool does not support.
+            parts[i] = parts[i].rjust(width) if rightJust else parts[i].ljust(width) 
+            break
+        return ''.join(parts)
+    def colorSafeRjust(s, width):
+        return colorSafeJust(s, width)
+    def colorSafeLjust(s, width):
+        return colorSafeJust(s, width, False)
+
     # Handle broken pipes when piping the output of this process to other
     # processes.
     signal(SIGPIPE,SIG_DFL)
@@ -34,7 +57,7 @@ def main():
         for item in x:
             if item in ("", "N/A", "NA"): continue
             try:
-                float(item)
+                float(removeAnsiEscape(item))
             except:
                 return False
         return True
@@ -67,20 +90,20 @@ def main():
             else:
                 columnLists[headerColumns[i]].append("")
     for key in columnLists:
-        maxWidth = max(len(x) for x in (columnLists[key] + [key]))
+        maxWidth = max(len(removeAnsiEscape(x)) for x in (columnLists[key] + [key]))
         if options['-r'] == "all":
-            columnLists[key] = [key.rjust(maxWidth)] + \
-            [x.rjust(maxWidth) for x in columnLists[key]]
+            columnLists[key] = [colorSafeRjust(key,maxWidth)] + \
+            [colorSafeRjust(x,maxWidth) for x in columnLists[key]]
         elif options['-r'] == "no":
-            columnLists[key] = [key.ljust(maxWidth)] + \
-            [x.ljust(maxWidth) for x in columnLists[key]]
+            columnLists[key] = [colorSafeLjust(key,maxWidth)] + \
+            [colorSafeLjust(x,maxWidth) for x in columnLists[key]]
         else:
             if isNumericColumn(columnLists[key]):
-                columnLists[key] = [key.rjust(maxWidth)] + \
-                [x.rjust(maxWidth) for x in columnLists[key]]
+                columnLists[key] = [colorSafeRjust(key,maxWidth)] + \
+                [colorSafeRjust(x,maxWidth) for x in columnLists[key]]
             else:
-                columnLists[key] = [key.ljust(maxWidth)] + \
-                [x.ljust(maxWidth) for x in columnLists[key]]
+                columnLists[key] = [colorSafeLjust(key,maxWidth)] + \
+                [colorSafeLjust(x,maxWidth) for x in columnLists[key]]
 
     orderedColumns = \
         [columnLists[headerColumns[i]] for i in xrange(len(headerColumns))]
