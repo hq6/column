@@ -1,6 +1,6 @@
 # Column.py
 
-This is a more re-implementation of the venerable old `column` application
+This is a modern re-implementation of the venerable old `column` application
 available on most Unix / Linux systems today.
 
 ## Why re-implement this ancient tool?

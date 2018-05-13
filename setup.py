@@ -5,7 +5,7 @@ long_description=\
 Column.py
 ===============
 
-This is a more re-implementation of the venerable old ``column`` application
+This is a modern re-implementation of the venerable old ``column`` application
 available on most Unix / Linux systems today.
 
 Why re-implement this ancient tool?
@@ -66,7 +66,7 @@ With `column.py`, the output looks like this with default options::
 
 setup(
   name="column.py",
-  version='0.1',
+  version='0.1.1',
   scripts=['column.py'],
   install_requires=['docopt>=0.2'],
   author="Henry Qin",
