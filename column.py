@@ -1,4 +1,7 @@
-#!/usr/bin/python
+#!/usr/bin/env python
+
+from __future__ import print_function
+from functools import reduce
 
 from sys import argv, stdin
 from docopt import docopt
@@ -29,7 +32,7 @@ def main():
     # before and/or after a string, perform justification, and then re-add
     # escape sequences.
     def colorSafeJust(s, width, rightJust=True):
-        parts = filter(None, ansi_escape.split(s))
+        parts = list(filter(None, ansi_escape.split(s)))
         for i in range(len(parts)):
             if ansi_escape.match(parts[i]): continue
             # NOTE: If there is more than one non-escape part, that implies
@@ -79,12 +82,12 @@ def main():
 
     # Derive the number of columns from the header column
     headerLine = lines.pop(0)
-    headerColumns = sep.split(headerLine)
+    headerColumns = sep.split(headerLine.decode('utf-8'))
 
     columnLists = defaultdict(list)
     for line in lines:
-        columns = sep.split(line)
-        for i in xrange(len(headerColumns)):
+        columns = sep.split(line.decode('utf-8'))
+        for i in range(len(headerColumns)):
             if i < len(columns):
                 columnLists[headerColumns[i]].append(columns[i])
             else:
@@ -106,9 +109,9 @@ def main():
                 [colorSafeLjust(x,maxWidth) for x in columnLists[key]]
 
     orderedColumns = \
-        [columnLists[headerColumns[i]] for i in xrange(len(headerColumns))]
+        [columnLists[headerColumns[i]] for i in range(len(headerColumns))]
     for row in zip(*orderedColumns):
-        print options['--output-separator'].join(row)
+        print(options['--output-separator'].join(row))
 
 
 if __name__ == '__main__':
