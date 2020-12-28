@@ -17,7 +17,6 @@ Usage: ./column.py [options] [<input> ...]
 
     -h,--help                    show this
     -s,--separator <sep>         specify the regex used for delimiting columns
-			            [default: \\s+]
     -r <right-align-mode>        Right align "all" columns, "numeric" columns,
                                     or "no" columns [default: numeric]
     -o --output-separator <ofs>  Delimiter to use between columns in the output
@@ -78,7 +77,7 @@ def main():
                   for x in f.readlines() if isValidLine(x)])
       lines = reduce(lambda x, a: x + a, linesList, [])
 
-    sep = re.compile(options['--separator'])
+    sep = re.compile(options['--separator'] if options['--separator'] else r'\s+')
 
     # Derive the number of columns from the header column
     headerLine = lines.pop(0)
