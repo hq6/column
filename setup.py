@@ -66,7 +66,7 @@ With `column.py`, the output looks like this with default options::
 
 setup(
   name="column.py",
-  version='0.1.1',
+  version='0.1.2',
   scripts=['column.py'],
   install_requires=['docopt>=0.2'],
   author="Henry Qin",
